@@ -68,31 +68,6 @@ function EventProtocol:dispatchEvent(event)
     return self.target_
 end
 
-function EventProtocol:removeEventListener(handleToRemove, key1, key2)
-    if key2 then
-        PRINT_DEPRECATED("EventProtocol:removeEventListener(eventName, method, target) is deprecated, please use EventProtocol:removeEventListener(handle)")
-        printLog("WARN", "EventProtocol:removeEventListener(eventName, method, target) cannot remove listener")
-        return self.target_
-    elseif key1 then
-        PRINT_DEPRECATED("EventProtocol:removeEventListener(eventName, handle) is deprecated, please use EventProtocol:removeEventListener(handle)")
-        handleToRemove = key1
-    end
-
-    for eventName, listenersForEvent in pairs(self.listeners_) do
-        for handle, _ in pairs(listenersForEvent) do
-            if handle == handleToRemove then
-                listenersForEvent[handle] = nil
-                if DEBUG > 1 then
-                    printInfo("%s [EventProtocol] removeEventListener() - remove listener [%s] for event %s", tostring(self.target_), handle, eventName)
-                end
-                return self.target_
-            end
-        end
-    end
-
-    return self.target_
-end
-
 function EventProtocol:removeEventListenersByTag(tagToRemove)
     for eventName, listenersForEvent in pairs(self.listeners_) do
         for handle, listener in pairs(listenersForEvent) do
@@ -116,11 +91,6 @@ function EventProtocol:removeEventListenersByEvent(eventName)
         printInfo("%s [EventProtocol] removeAllEventListenersForEvent() - remove all listeners for event %s", tostring(self.target_), eventName)
     end
     return self.target_
-end
-
-function EventProtocol:removeAllEventListenersForEvent(eventName)
-    PRINT_DEPRECATED("EventProtocol:removeAllEventListenersForEvent() is deprecated, please use EventProtocol:removeEventListenersByEvent()")
-    return self:removeEventListenersByEvent(eventName)
 end
 
 function EventProtocol:removeAllEventListeners()

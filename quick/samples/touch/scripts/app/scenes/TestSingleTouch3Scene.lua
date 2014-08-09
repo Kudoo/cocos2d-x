@@ -14,12 +14,12 @@ function TestSingleTouch3Scene:ctor()
             image = "WhiteButton.png",
             size = cc.size(600, 500),
             label = "TOUCH ME !",
-            labelColor = cc.c3(255, 0, 0)})
+            labelColor = cc.c3b(255, 0, 0)})
         :pos(display.cx, display.cy)
         :addTo(self)
     drawBoundingBox(self, self.parentButton, cc.c4f(0, 1.0, 0, 1.0))
 
-    self.parentButton.label2 = cc.ui.UILabel.new({text = "", size = 24, color = cc.c3(0, 0, 255)})
+    self.parentButton.label2 = cc.ui.UILabel.new({text = "", size = 24, color = cc.c3b(0, 0, 255)})
         :align(display.CENTER, 300, 60)
         :addTo(self.parentButton)
 

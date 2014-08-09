@@ -25,7 +25,6 @@ function TestUIListViewScene:createListView5()
         -- bgColor = cc.c4b(200, 200, 200, 120),
         bg = "sunset.png",
         viewRect = cc.rect(40, 80, 120, 400),
-        padding = {left = 5, right = 5, top = 20, bottom = 20},
         direction = cc.ui.UIScrollView.DIRECTION_VERTICAL,
         scrollbarImgV = "bar.png"}
         :onTouch(handler(self, self.touchListener))
@@ -52,6 +51,11 @@ function TestUIListViewScene:createListView5()
                     event.target:getButtonLabel():setColor(display.COLOR_BLUE)
                 end)
                 :onButtonClicked(function(event)
+                    if not self.lv:isItemInViewRect(item) then
+                        print("TestUIListViewScene item not in view rect")
+                        return
+                    end
+
                     print("TestUIListViewScene buttonclicked")
                     local _,h = item:getItemSize()
                     if 40 == h then
@@ -90,12 +94,20 @@ function TestUIListViewScene:createListView5()
 end
 
 function TestUIListViewScene:touchListener(event)
-    dump(event, "TestUIListViewScene - event:")
+    if not event.listView:isItemInViewRect(event.itemPos) then
+        print("TestUIListViewScene item not in view rect")
+        return
+    end
+
+    -- dump(event, "TestUIListViewScene - event:")
+    print("TestUIListViewScene event:" .. event.name .. " pos:" .. event.itemPos)
     local listView = event.listView
-    if 3 == event.itemPos then
-        listView:removeItem(event.item, true)
-    else
-        -- event.item:setItemSize(120, 80)
+    if "clicked" == event.name then
+        if 3 == event.itemPos then
+            listView:removeItem(event.item, true)
+        else
+            -- event.item:setItemSize(120, 80)
+        end
     end
 end
 
@@ -223,9 +235,12 @@ function TestUIListViewScene:createListView7()
 end
 
 function TestUIListViewScene:touchListener7(event)
-    local column = math.ceil(event.point.x/80)
-    local idx = (event.itemPos - 1)*3 + column
-    print("TestUIListViewScene - Boutton " .. idx .. " clicked, judge in list touch listener")
+    print("TestUIListViewScene - event:" .. event.name .. " pos:" .. event.itemPos)
+    if "clicked" == event.name then
+        local column = math.ceil(event.point.x/80)
+        local idx = (event.itemPos - 1)*3 + column
+        print("TestUIListViewScene - Boutton " .. idx .. " clicked, judge in list touch listener")
+    end
 end
 
 return TestUIListViewScene

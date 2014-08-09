@@ -1006,7 +1006,7 @@ function display.newPolygon(points, params)
     end
 
     local drawNode = cc.DrawNode:create()
-    drawNode:drawPolygon(points, #points, fillColor, borderWidth, borderColor)
+    drawNode:drawPolygon(points, { fillColor = fillColor, borderWidth = borderWidth, borderColor = borderColor})
 
     return drawNode
 end

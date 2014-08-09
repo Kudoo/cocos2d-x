@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# set .bash_profile or .profile
+if [ -f ~/.bash_profile ]; then
+PROFILE_NAME=~/.bash_profile
+else
+PROFILE_NAME=~/.profile
+fi
+source $PROFILE_NAME
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_ROOT="$DIR/.."
 APP_ANDROID_ROOT="$DIR"
@@ -16,7 +24,7 @@ echo "  APP_ANDROID_ROOT    = $APP_ANDROID_ROOT"
 
 # if dont use DEBUG, comments out two lines below
 NDK_DEBUG=1
-NDK_BUILD_FLAGS="CPPFLAGS=\"-DCOCOS2D_DEBUG=1\""
+NDK_BUILD_FLAGS="CPPFLAGS=-DANYSDK_DEFINE=1 ANYSDK_DEFINE=1"
 
 echo "- cleanup"
 find "$APP_ANDROID_ROOT" -type d | xargs chmod 755 $1

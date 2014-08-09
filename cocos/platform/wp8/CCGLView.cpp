@@ -24,14 +24,12 @@ THE SOFTWARE.
 ****************************************************************************/
 
 #include "CCGLView.h"
-#include "deprecated/CCSet.h"
 #include "base/ccMacros.h"
 #include "base/CCDirector.h"
 #include "base/CCTouch.h"
 #include "base/CCIMEDispatcher.h"
 #include "CCApplication.h"
 #include "CCWinRTUtils.h"
-#include "deprecated/CCNotificationCenter.h"
 
 using namespace Platform;
 using namespace Windows::Foundation;
@@ -119,6 +117,7 @@ bool GLView::Create(EGLDisplay eglDisplay, EGLContext eglContext, EGLSurface egl
     m_eglDisplay = eglDisplay;
     m_eglContext = eglContext;
     m_eglSurface = eglSurface;
+
     UpdateForWindowSizeChange(width, height);
     return true;
 }
@@ -405,23 +404,23 @@ const Mat4& GLView::getOrientationMatrix() const
 
 void GLView::UpdateOrientationMatrix()
 {
-    kmMat4Identity(&m_orientationMatrix);
-    kmMat4Identity(&m_reverseOrientationMatrix);
+	m_orientationMatrix = Mat4::IDENTITY;
+	m_reverseOrientationMatrix = Mat4::IDENTITY;
     switch(m_orientation)
 	{
 		case Windows::Graphics::Display::DisplayOrientations::PortraitFlipped:
-			kmMat4RotationZ(&m_orientationMatrix, M_PI);
-			kmMat4RotationZ(&m_reverseOrientationMatrix, -M_PI);
+			Mat4::createRotationZ(M_PI, &m_orientationMatrix);
+			Mat4::createRotationZ(-M_PI, &m_reverseOrientationMatrix);
 			break;
 
 		case Windows::Graphics::Display::DisplayOrientations::Landscape:
-            kmMat4RotationZ(&m_orientationMatrix, -M_PI_2);
-			kmMat4RotationZ(&m_reverseOrientationMatrix, M_PI_2);
+			Mat4::createRotationZ(-M_PI_2, &m_orientationMatrix);
+			Mat4::createRotationZ(M_PI_2, &m_reverseOrientationMatrix);
 			break;
 			
 		case Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped:
-            kmMat4RotationZ(&m_orientationMatrix, M_PI_2);
-            kmMat4RotationZ(&m_reverseOrientationMatrix, -M_PI_2);
+			Mat4::createRotationZ(M_PI_2, &m_orientationMatrix);
+			Mat4::createRotationZ(-M_PI_2, &m_reverseOrientationMatrix);
 			break;
 
         default:

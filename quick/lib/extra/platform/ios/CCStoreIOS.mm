@@ -149,7 +149,7 @@ static const char* const SANDBOX_RECEIPT_VERIFY_URL = "https://sandbox.itunes.ap
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
 {
-    cocos2d::__Array* ccproducts = cocos2d::__Array::createWithCapacity(response.products.count);
+    Vector<StoreProduct*> ccproducts(response.products.count);
     for (int i = 0; i < response.products.count; ++i)
     {
         // cache loaded product
@@ -162,20 +162,19 @@ static const char* const SANDBOX_RECEIPT_VERIFY_URL = "https://sandbox.itunes.ap
                                                                   utf8cstr(product.localizedDescription),
                                                                   [product.price floatValue],
                                                                   utf8cstr(product.priceLocale.localeIdentifier));
-        ccproducts->addObject(ccproduct);
+        ccproducts.pushBack(ccproduct);
         CCLOG("[CCStore_obj] productsRequestDidReceiveResponse() get pid: %s", utf8cstr(product.productIdentifier));
     }
 
-    cocos2d::__Array* ccinvalidProductsId = NULL;
+    vector<std::string*> ccinvalidProductsId;
     if (response.invalidProductIdentifiers.count > 0)
     {
-        ccinvalidProductsId = cocos2d::__Array::createWithCapacity(response.invalidProductIdentifiers.count);
+        ccinvalidProductsId.reserve(response.invalidProductIdentifiers.count);
         for (int i = 0; i < response.invalidProductIdentifiers.count; ++i)
         {
             NSString* productId = [response.invalidProductIdentifiers objectAtIndex:i];
-            cocos2d::__String* ccid = new cocos2d::__String(utf8cstr(productId));
-            ccid->autorelease();
-            ccinvalidProductsId->addObject(ccid);
+            std::string *ccid = new std::string(utf8cstr(productId));
+            ccinvalidProductsId.push_back(ccid);
             CCLOG("[CCStore_obj] productsRequestDidReceiveResponse() invalid pid: %s", utf8cstr(productId));
         }
     }
@@ -184,6 +183,10 @@ static const char* const SANDBOX_RECEIPT_VERIFY_URL = "https://sandbox.itunes.ap
     productRequest_ = nil;
     productRequestDelegate_->requestProductsCompleted(ccproducts, ccinvalidProductsId);
     productRequestDelegate_ = NULL;
+    
+    for (int i=0; i<ccinvalidProductsId.size(); i++) {
+        delete ccinvalidProductsId.at(i);
+    }
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error

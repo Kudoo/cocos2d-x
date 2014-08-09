@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 #include <string>
 #include <stack>
-#include "deprecated/CCString.h"
+
 #include "CCFileUtils.h"
 #include "base/CCDirector.h"
 #include "CCSAXParser.h"

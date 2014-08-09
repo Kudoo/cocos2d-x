@@ -29,29 +29,11 @@
 #include <vector>
 
 #include "base/CCRef.h"
+#include "base/CCVector.h"
 
 using namespace std;
 
 NS_CC_BEGIN
-
-class CC_DLL CCScriptHandlePair
-{
-public:
-    int index;
-    int listener;
-    int tag;
-    int priority;
-    bool enabled;
-
-    CCScriptHandlePair(int index_, int listener_, int tag_, int priority_)
-    : index(index_)
-    , listener(listener_)
-    , tag(tag_)
-    , priority(priority_)
-    , enabled(true)
-    {
-    }
-};
 
 #define NODE_EVENT                  0
 #define NODE_ENTER_FRAME_EVENT      1
@@ -65,13 +47,41 @@ public:
 #define NODE_TOUCH_TARGETING_PHASE  1
 
 
-// listener handle -> listener pair
-typedef vector<CCScriptHandlePair> CCScriptEventListenersForEvent;
-typedef CCScriptEventListenersForEvent::iterator CCScriptEventListenersForEventIterator;
+class CC_DLL CCScriptHandlePair : public Ref
+{
+public:
+    int handle;
+    int event;
+    int listener;
+    int tag;
+    bool enabled;
+    bool removed;
 
-// event -> CCScriptEventListenersForEvent
-typedef map<int, CCScriptEventListenersForEvent> CCScriptEventListenersForDispatcher;
-typedef CCScriptEventListenersForDispatcher::iterator CCScriptEventListenersForDispatcherIterator;
+    static CCScriptHandlePair *create(unsigned int handle, int event, int listener, int tag)
+    {
+        CCScriptHandlePair *pair = new CCScriptHandlePair(handle, event, listener, tag);
+        pair->autorelease();
+        return pair;
+    }
+    
+    CCScriptHandlePair(unsigned int handle_, int event_, int listener_, int tag_)
+    : handle(handle_)
+    , event(event_)
+    , listener(listener_)
+    , tag(tag_)
+    , enabled(true)
+    , removed(false)
+    {
+    }
+    
+    ~CCScriptHandlePair()
+    {
+    }
+};
+
+// listener handle -> listener pair
+typedef Vector<CCScriptHandlePair*> CCScriptEventListenersForEvent;
+typedef CCScriptEventListenersForEvent::iterator CCScriptEventListenersForEventIterator;
 
 class CC_DLL CCScriptEventDispatcher : public Ref
 {
@@ -83,21 +93,15 @@ public:
     void removeScriptEventListenersByEvent(int event);
     void removeScriptEventListenersByTag(int tag);
     void removeAllScriptEventListeners();
+    void cleanRemovedEvents();
 
     bool hasScriptEventListener(int event);
-    CCScriptEventListenersForEvent &getScriptEventListenersByEvent(int event) const;
-    CCScriptEventListenersForDispatcher &getAllScriptEventListeners() const;
+    CCScriptEventListenersForEvent *getAllScriptEventListeners() const;
 
 private:
-    CCScriptEventListenersForDispatcher *m_scriptEventListeners;
+    CCScriptEventListenersForEvent *m_scriptEventListeners;
 
     static int s_nextScriptEventHandleIndex;
-    static CCScriptEventListenersForEvent s_emptyListenersForEvent;
-    static CCScriptEventListenersForDispatcher s_emptyListeners;
-
-    static bool sortListenerCompare(const CCScriptHandlePair &a, const CCScriptHandlePair &b);
-    static bool removeListenerByTag(CCScriptHandlePair &p);
-    static int s_removeTag;
 };
 
 NS_CC_END

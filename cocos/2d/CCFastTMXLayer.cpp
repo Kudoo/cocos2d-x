@@ -44,7 +44,7 @@ THE SOFTWARE.
 #include "base/CCDirector.h"
 #include "base/CCConfiguration.h"
 #include "renderer/CCRenderer.h"
-#include "deprecated/CCString.h"
+
 #include "renderer/CCGLProgramStateCache.h"
 #include <algorithm>
 

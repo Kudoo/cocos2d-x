@@ -36,8 +36,6 @@ THE SOFTWARE.
 #include "renderer/CCGLProgramState.h"
 #include "renderer/CCGLProgram.h"
 
-#include "deprecated/CCString.h" // For StringUtils::format
-
 NS_CC_BEGIN
 
 

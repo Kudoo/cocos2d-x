@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "math/TransformUtils.h"
 
-#include "deprecated/CCString.h"
+
 
 
 using namespace std;

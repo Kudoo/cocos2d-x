@@ -1,5 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
+$(call import-add-path, $(QUICK_V3_LIB)/extra/anysdk/)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := game_shared
@@ -11,8 +13,6 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
     $(QUICK_V3_LIB)/ProjectConfig/SimulatorConfig.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../sources
-
-#LOCAL_CFLAGS += -std=c++11 -Wno-psabi -DCC_LUA_ENGINE_ENABLED=1 $(ANDROID_COCOS2D_BUILD_FLAGS)
 
 LOCAL_LDLIBS := -lGLESv2 \
                 -llog \
@@ -26,8 +26,10 @@ LOCAL_EXPORT_LDLIBS := -lGLESv1_CM \
                        -lz \
                        -landroid
 
-LOCAL_WHOLE_STATIC_LIBRARIES := cocos_lua_static
+LOCAL_WHOLE_STATIC_LIBRARIES := libquickcocos2dx
+LOCAL_WHOLE_STATIC_LIBRARIES += PluginProtocolStatic
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,lua_bindings)
+$(call import-module,proj.android)
+$(call import-module,protocols/android)

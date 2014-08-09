@@ -37,7 +37,9 @@ THE SOFTWARE.
 #include <android/log.h>
 #include <jni.h>
 
-//#include "PluginJniHelper.h"        //for anysdk
+#if defined(ANYSDK_DEFINE)
+#include "PluginJniHelper.h"        //for anysdk
+#endif
 
 #define  LOG_TAG    "main"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
@@ -52,7 +54,10 @@ extern "C"
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     JniHelper::setJavaVM(vm);
-    //anysdk::framework::PluginJniHelper::setJavaVM(vm); // add for plugin, for anysdk
+
+#if defined(ANYSDK_DEFINE)
+    anysdk::framework::PluginJniHelper::setJavaVM(vm); // add for plugin, for anysdk
+#endif
 
     return JNI_VERSION_1_4;
 }

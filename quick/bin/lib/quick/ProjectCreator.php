@@ -242,7 +242,8 @@ class ProjectCreator
 
         while (($file = readdir($dh)) !== false)
         {
-            if ($file{0} == '.')
+            // "classpath" for eclipse
+            if ($file{0} == '.' && $file != ".classpath")
             {
                 continue;
             }

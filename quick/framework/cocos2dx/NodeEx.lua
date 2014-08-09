@@ -130,71 +130,7 @@ function Node:setNodeEventEnabled(enabled, listener)
     return self
 end
 
-function Node:removeScriptEventListenersByEvent(event)
-    PRINT_DEPRECATED("Node.removeScriptEventListenersByEvent() is deprecated, please use c.node):removeNodeEventListenersByEvent()")
-    self:removeNodeEventListenersByEvent(event)
-end
-
-function Node:registerScriptHandler(listener)
-    PRINT_DEPRECATED("Node.registerScriptHandler() is deprecated, please use Node.addNodeEventListener()")
-    return self:addNodeEventListener(c.NODE_EVENT, function(event)
-        listener(event.name)
-    end)
-end
-
-function Node:unregisterScriptHandler()
-    PRINT_DEPRECATED("Node.unregisterScriptHandler() is deprecated, please use Node.removeAllNodeEventListeners()")
-    return self:removeAllNodeEventListeners()
-end
-
-function Node:addTouchEventListener(handler)
-    PRINT_DEPRECATED("Node.addTouchEventListener() is deprecated, please use Node.addNodeEventListener()")
-    return self:addNodeEventListener(c.NODE_TOUCH_EVENT, function(event)
-        return handler(event.name, event.x, event.y, event.prevX, event.prevY)
-    end)
-end
-
-function Node:registerScriptTouchHandler(handler, isMultiTouches)
-    PRINT_DEPRECATED("Node.registerScriptTouchHandler() is deprecated, please use Node.addNodeEventListener()")
-    if isMultiTouches then
-        self:setTouchMode(c.TOUCH_MODE_ALL_AT_ONCE)
-    else
-        self:setTouchMode(c.TOUCH_MODE_ONE_BY_ONE)
-    end
-    return self:addNodeEventListener(c.NODE_TOUCH_EVENT, function(event)
-        if event.mode == c.TOUCH_MODE_ALL_AT_ONCE then
-            local points = {}
-            for id, p in pairs(event.points) do
-                points[#points + 1] = p.x
-                points[#points + 1] = p.y
-                points[#points + 1] = p.id
-            end
-            return handler(event.name, points)
-        else
-            return handler(event.name, event.x, event.y, event.prevX, event.prevY)
-        end
-    end)
-end
-
-function Node:scheduleUpdate(handler)
-    PRINT_DEPRECATED("Node.scheduleUpdate(handler) is deprecated, please use Node.addNodeEventListener()")
-    if not handler then
-        handler = function(dt) self:onEnterFrame(dt) end
-    end
-    self:addNodeEventListener(c.NODE_ENTER_FRAME_EVENT, handler)
-end
-
-function Node:scheduleUpdateWithPriorityLua(handler)
-    PRINT_DEPRECATED("Node.scheduleUpdateWithPriorityLua() is deprecated, please use Node.addNodeEventListener()")
-    self:addNodeEventListener(c.NODE_ENTER_FRAME_EVENT, handler)
-end
-
-function Node:setTouchPriority()
-    PRINT_DEPRECATED("Node.setTouchPriority() is deprecated, remove it")
-end
-
 function Node:setKeypadEnabled(enable)
-    print("···Node:setKeypadEnabled")
     self:setKeyboardEnabled(enable)
 end
 

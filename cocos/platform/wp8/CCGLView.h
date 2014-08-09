@@ -49,8 +49,18 @@ NS_CC_BEGIN
 
 class GLView;
 
+// FIXME:
+// class CC_DLL GLView : public Ref, public GLViewProtocol
+// conflicts with
+// 
+// lua_cocos2dx_auto.cpp
+//
+// int lua_cocos2dx_GLViewProtocol_setDesignResolutionSize(lua_State* tolua_S)
+//
+// cobj = (cocos2d::GLViewProtocol*)tolua_tousertype(tolua_S,1,0);
+//
 
-class CC_DLL GLView : public Ref, public GLViewProtocol
+class CC_DLL GLView : public GLViewProtocol, public Ref
 {
 public:
     static GLView* create(const std::string& viewName);

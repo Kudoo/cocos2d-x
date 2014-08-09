@@ -16,7 +16,8 @@ echo   APP_ANDROID_ROOT    = %APP_ANDROID_ROOT%
 
 rem if dont use DEBUG, comments out two lines below
 set NDK_DEBUG=1
-set NDK_BUILD_FLAGS=CPPFLAGS="-DCOCOS2D_DEBUG=1"
+set ANYSDK_DEFINE=1
+set NDK_BUILD_FLAGS=CPPFLAGS="-DDANYSDK_DEFINE=1"
 
 echo - cleanup
 if exist "%APP_ANDROID_ROOT%bin" rmdir /s /q "%APP_ANDROID_ROOT%bin"

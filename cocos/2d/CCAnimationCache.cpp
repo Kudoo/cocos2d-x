@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "2d/CCSpriteFrame.h"
 #include "2d/CCSpriteFrameCache.h"
 #include "platform/CCFileUtils.h"
-#include "deprecated/CCString.h"
 
 using namespace std;
 

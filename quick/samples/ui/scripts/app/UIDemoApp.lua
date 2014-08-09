@@ -65,7 +65,7 @@ function UIDemoApp:createGrid(scene)
     end
 
     display.newLine(
-        {{display.left, display.cy}, {display.right, display.cy}},
+        {{display.left, display.cy + 1}, {display.right, display.cy + 1}},
         {borderColor = cc.c4f(1.0, 0.75, 0.75, 1.0)})
     :addTo(scene)
 

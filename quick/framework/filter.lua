@@ -31,6 +31,8 @@ MOTION_BLUR = 		{cc.MotionBlurFilter, 2, {1, 0}}, 		-- {size, angle}
 SHARPEN = 		{cc.SharpenFilter, 2, {0, 0}}, 	-- {sharpness, amount}
 MASK = 			{cc.MaskFilter, 1}, 				-- {DO NOT USE IT}
 DROP_SHADOW = 	{cc.DropShadowFilter, 1}, 		-- {DO NOT USE IT}
+-- custom
+CUSTOM = {cc.CustomFilter, 1}
 }
 
 local MULTI_FILTERS = {
@@ -51,6 +53,11 @@ function filter.newFilter(__filterName, __param)
 	local __filterData = FILTERS[__filterName]
 	assert(__filterData, "filter.newFilter() - filter "..__filterName.." is not found.")
 	local __cls, __count, __default = unpack(__filterData)
+
+	if "CUSTOM" == __filterName then
+		return __cls:create(__param)
+	end
+
 	local __paramCount = (__param and #__param) or 0
 	print("filter.newFilter:", __paramCount, __filterName, __count)
 	print("filter.newFilter __param:", __param)
@@ -85,9 +92,10 @@ end
 function filter.newFilters(__filterNames, __params)
 	assert(#__filterNames == #__params, 
 		"filter.newFilters() - Please ensure the filters and the parameters have the same amount.")
-	local __filters = cc.Array:create()
+	local __filters = {} -- cc.Array:create()
 	for i in ipairs(__filterNames) do
-		__filters:addObject(filter.newFilter(__filterNames[i], __params[i]))
+		table.insert(__filters, filter.newFilter(__filterNames[i], __params[i]))
+		--__filters:addObject(filter.newFilter(__filterNames[i], __params[i]))
 	end
 	return __filters
 end

@@ -33,7 +33,7 @@ public:
     
     bool canMakePurchases(void);
     
-    void loadProducts(__Array* productsId, StoreProductsRequestDelegate* delegate);
+    void loadProducts(Vector<std::string>& productsId, StoreProductsRequestDelegate* delegate);
 #if CC_LUA_ENGINE_ENABLED > 0
     void loadProductsLua(cocos2d::LUA_TABLE __LUA_TABLE__, cocos2d::LUA_FUNCTION callback);
 #endif
@@ -59,7 +59,7 @@ public:
     virtual void transactionRestored(StorePaymentTransaction* transaction);
     
 #if CC_LUA_ENGINE_ENABLED > 0
-    virtual void requestProductsCompleted(cocos2d::__Array* products, cocos2d::__Array* invalidProductsId = NULL);
+    virtual void requestProductsCompleted(Vector<StoreProduct*>& products, vector<std::string*>& invalidProductsId);
     virtual void requestProductsFailed(int errorCode, const char* errorString);
 #endif
     

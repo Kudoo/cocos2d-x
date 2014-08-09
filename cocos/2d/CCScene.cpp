@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "2d/CCSprite.h"
 #include "2d/CCSpriteBatchNode.h"
 #include "physics/CCPhysicsWorld.h"
-#include "deprecated/CCString.h"
+
 
 NS_CC_BEGIN
 

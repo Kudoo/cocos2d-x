@@ -46,8 +46,6 @@ THE SOFTWARE.
 #include "renderer/CCQuadCommand.h"
 #include "math/TransformUtils.h"
 
-#include "deprecated/CCString.h" // For StringUtils::format
-
 
 NS_CC_BEGIN
 

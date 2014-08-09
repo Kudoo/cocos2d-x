@@ -24,6 +24,7 @@
 
 #include "LuaBasicConversions.h"
 #include "tolua_fix.h"
+#include <sstream>
 
 
 

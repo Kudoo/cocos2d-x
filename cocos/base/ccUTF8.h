@@ -29,6 +29,7 @@
 #include "base/CCPlatformMacros.h"
 #include <vector>
 #include <string>
+#include <sstream>
 
 NS_CC_BEGIN
 
@@ -119,6 +120,16 @@ CC_DLL unsigned int getIndexOfLastNotChar16(const std::vector<char16_t>& str, ch
  *  @brief Gets char16_t vector from a given utf16 string
  */
 CC_DLL std::vector<char16_t> getChar16VectorFromUTF16String(const std::u16string& utf16);
+    
+    template<typename T>
+    std::string toString(T arg)
+    {
+        std::stringstream ss;
+        ss << arg;
+        return ss.str();
+    }
+    
+CC_DLL std::string format(const char* format, ...) CC_FORMAT_PRINTF(1, 2);
 
 } // namespace StringUtils {
 

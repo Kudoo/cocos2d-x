@@ -50,17 +50,10 @@ local p = cc.PACKAGE_NAME .. ".cocos2dx."
 require(p .. "Cocos2dConstants")
 require (p .. "OpenglConstants")
 require (p .. "Cocos2d")
+require (p .. "StudioConstants")
 
-cc.c3 = cc.c3b
-
--- require(p .. "Global")
--- require(p .. "ObjectBinding")
--- require(p .. "OpenGL")
--- require(p .. "Geometry")
 require(p .. "Event")
 require(p .. "NodeEx")
-require(p .. "LayerEx")
 require(p .. "SceneEx")
 require(p .. "SpriteEx")
--- require(p .. "DrawNodeEx")
-require(p .. "MenuItemEx")
+require(p .. "DrawNodeEx")

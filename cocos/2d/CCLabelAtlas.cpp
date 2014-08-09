@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "renderer/ccGLStateCache.h"
 #include "math/TransformUtils.h"
 
-#include "deprecated/CCString.h"
+
 
 #if CC_LABELATLAS_DEBUG_DRAW
 #include "renderer/CCRenderer.h"

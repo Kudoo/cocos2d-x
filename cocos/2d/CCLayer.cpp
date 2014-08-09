@@ -45,7 +45,7 @@ THE SOFTWARE.
 #include "base/CCEventListenerAcceleration.h"
 #include "math/TransformUtils.h"
 
-#include "deprecated/CCString.h"
+
 
 #if CC_USE_PHYSICS
 #include "physics/CCPhysicsBody.h"

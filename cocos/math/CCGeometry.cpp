@@ -199,7 +199,7 @@ void Rect::merge(const Rect& rect)
     float left2   = rect.getMinX();
     float right2  = rect.getMaxX();
     float bottom2 = rect.getMinY();
-#ifdef WIN32
+#if defined(WIN32) && !defined(WP8)
     origin.x    = fminf(left1, left2);
     origin.y    = fminf(bottom1, bottom2);
     size.width  = fmaxf(right1, right2) - origin.x;

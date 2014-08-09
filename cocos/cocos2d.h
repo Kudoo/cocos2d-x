@@ -272,10 +272,6 @@ THE SOFTWARE.
 // Audio
 #include "audio/include/SimpleAudioEngine.h"
 
-// Deprecated include
-#include "deprecated/CCArray.h"
-#include "deprecated/CCString.h"
-
 
 NS_CC_BEGIN
 

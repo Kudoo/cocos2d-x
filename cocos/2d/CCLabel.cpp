@@ -40,7 +40,7 @@
 #include "base/CCEventCustom.h"
 #include "base/CCProfiling.h"
 
-#include "deprecated/CCString.h"
+
 
 NS_CC_BEGIN
 

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CCLabelAtlas.h"
 #include "2d/CCLabel.h"
 #include "base/CCScriptSupport.h"
-#include "deprecated/CCString.h"
+
 #include <stdarg.h>
 #include <cstring>
 

@@ -25,7 +25,7 @@ THE SOFTWARE.
 ****************************************************************************/
 #include "CCLabelTTF.h"
 #include "2d/CCLabel.h"
-#include "deprecated/CCString.h"
+
 
 NS_CC_BEGIN
 

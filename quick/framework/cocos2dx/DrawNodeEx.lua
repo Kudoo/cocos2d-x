@@ -29,11 +29,6 @@ THE SOFTWARE.
 local c = cc
 local DrawNode = c.DrawNode
 
-function DrawNode:drawPol(points, params)
-	PRINT_DEPRECATED("DrawNode.drawPol() is deprecated, please use DrawNode.drawPolygon()")
-	return self:drawPolygon(points, params)
-end
-
 local drawPolygon = DrawNode.drawPolygon
 function DrawNode:drawPolygon(points, params)
 	local segments = #points
@@ -45,11 +40,7 @@ function DrawNode:drawPolygon(points, params)
 		if params.borderWidth then borderWidth = params.borderWidth end
 		if params.borderColor then borderColor = params.borderColor end
 	end
-	local pa = cc.PointArray:create(segments)
-	for i=1,segments do
-		pa:add(cc.p(points[i][1], points[i][2]))
-	end
-	drawPolygon(self, pa:fetchPoints(), pa:count(), fillColor, borderWidth, borderColor)
+	drawPolygon(self, points, #points, fillColor, borderWidth, borderColor)
 	return self
 end
 
@@ -79,13 +70,13 @@ function DrawNode:drawCircle(radius, params)
 		end
 	end
 	local radianPerSegm = 2 * math.pi/segments
-	local points = cc.PointArray:create(segments)
+	local points = {}
 	for i=1,segments do
 		local radii = startRadian+i*radianPerSegm
 		if radii > endRadian then break end
-		points:add(cc.p(posX + radius * math.cos(radii), posY + radius * math.sin(radii)))
+		points[i] = (cc.p(posX + radius * math.cos(radii), posY + radius * math.sin(radii)))
 	end
-	self:drawPolygon(points:fetchPoints(), points:count(), fillColor, borderWidth, borderColor)
+	self:drawPolygon(points, params)
 	return self
 end
 
@@ -102,33 +93,36 @@ function DrawNode:drawRect(xywh, params)
 	local y = 0
 	local w = 100
 	local h = 100
-	-- Treat xywh as a table
-	if type(xywh) == "table" then
-		-- The table is {x=num, y=num, w=num, h=num}
-		if xywh.x then
-			x = xywh.x
-			y = xywh.y
-			w = xywh.w
-			h = xywh.h
-		-- The table is {x, y, w, h}
+	if xywh then
+		-- Treat xywh as a table
+		if type(xywh) == "table" then
+			-- The table is {x=num, y=num, w=num, h=num}
+			if xywh.x then
+				x = xywh.x
+				y = xywh.y
+				w = xywh.w
+				h = xywh.h
+			-- The table is {x, y, w, h}
+			else
+				x = xywh[1]
+				y = xywh[2]
+				w = xywh[3]
+				h = xywh[4]
+			end
+		-- Treat xywh as a cc.rect
 		else
-			x = xywh[1]
-			y = xywh[2]
-			w = xywh[3]
-			h = xywh[4]
+			x = xywh.origin.x
+			y = xywh.origin.y
+			w = xywh.size.width
+			h = xywh.size.height
 		end
-	-- Treat xywh as a cc.rect
-	else
-		x = xywh.origin.x
-		y = xywh.origin.y
-		w = xywh.size.width
-		h = xywh.size.height
 	end
-	points[1] = {x,y}
-	points[2] = {x,y+h}
-	points[3] = {x+w,y+h}
-	points[4] = {x+w,y}
-	self:drawPol(points, params)
+	points[1] = cc.p(x,y)
+	points[2] = cc.p(x,y+h)
+	points[3] = cc.p(x+w,y+h)
+	points[4] = cc.p(x+w,y)
+	points[5] = cc.p(x,y)
+	self:drawPolygon(points, params)
 	return self
 end
 

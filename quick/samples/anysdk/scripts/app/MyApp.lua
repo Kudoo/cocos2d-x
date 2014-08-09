@@ -28,6 +28,11 @@ function MyApp:initAnySDK()
 	if device.platform ~= "android" then
 	end
 
+	if not anysdk then
+		printInfo("anysdk is havn't integration")
+		return
+	end
+
 	self.agentMgr = anysdk.AgentManager:getInstance()
 	self.agentMgr:init(ANYSDK_APPKEY, ANYSDK_SECRET, ANYSDK_PRIVATE_KEY, ANYSDK_OAUTH_LOGIN_SERVER)
 	self.agentMgr:loadALLPlugin()

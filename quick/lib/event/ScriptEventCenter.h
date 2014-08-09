@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-class __Array;
+class CCTouchTargetNode;
 
 #define CCTOUCHBEGAN        0
 #define CCTOUCHMOVED        1
@@ -69,38 +69,6 @@ public:
     void addTouchableNode(Node *node);
     void removeTouchableNode(Node *node);
 
-    virtual void registerWithTouchDispatcher(void) {}
-    virtual void unregisterWithTouchDispatcher(void) {}
-
-    virtual bool isTouchEnabled() { return true; }
-    virtual void setTouchEnabled(bool value) { CC_UNUSED_PARAM(value); }
-
-    virtual void setTouchMode(int mode) { CC_UNUSED_PARAM(mode); }
-    virtual int getTouchMode() { return 0 /*kCCTouchesAllAtOnce*/; }
-
-    virtual bool isTouchCaptureEnabled() { return true; }
-    virtual void setTouchCaptureEnabled(bool value) { CC_UNUSED_PARAM(value); }
-    virtual bool isTouchSwallowEnabled() { return false; };
-    virtual void setTouchSwallowEnabled(bool value) { CC_UNUSED_PARAM(value); }
-
-    virtual bool ccTouchBegan(Touch *pTouch, Event *pEvent) {
-        CC_UNUSED_PARAM(pTouch);
-        CC_UNUSED_PARAM(pEvent);
-        return true;
-    };
-    virtual void ccTouchMoved(Touch *pTouch, Event *pEvent) {
-        CC_UNUSED_PARAM(pTouch);
-        CC_UNUSED_PARAM(pEvent);
-    };
-    virtual void ccTouchEnded(Touch *pTouch, Event *pEvent) {
-        CC_UNUSED_PARAM(pTouch);
-        CC_UNUSED_PARAM(pEvent);
-    };
-    virtual void ccTouchCancelled(Touch *pTouch, Event *pEvent) {
-        CC_UNUSED_PARAM(pTouch);
-        CC_UNUSED_PARAM(pEvent);
-    };
-
     virtual void onTouchesBegan(const std::vector<Touch*>& touches, Event *pEvent);
     virtual void onTouchesMoved(const std::vector<Touch*>& touches, Event *pEvent);
     virtual void onTouchesEnded(const std::vector<Touch*>& touches, Event *pEvent);
@@ -123,12 +91,12 @@ protected:
     friend class Node;
     
     std::set<int> m_touchingIds;
-    __Array *m_touchableNodes;
-    __Array *m_touchingTargets;
+    Vector<Node*> _touchableNodes;
+    Vector<CCTouchTargetNode*> _touchingTargets;
     bool m_touchDispatchingEnabled;
     EventListenerTouchAllAtOnce *_touchListener;
 
-    void sortAllTouchableNodes(__Array *nodes);
+    void sortAllTouchableNodes(Vector<Node*>&nodes);
     void enableTouchDispatching();
     void disableTouchDispatching();
 

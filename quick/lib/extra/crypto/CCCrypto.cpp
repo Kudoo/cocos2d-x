@@ -5,7 +5,7 @@ extern "C" {
 //#include "crypto/base64/libb64.h"
 #include "crypto/base64/libbase64.h"
 #include "crypto/md5/md5.h"
-#include "xxtea.h"
+#include "xxtea/xxtea.h"
 }
 
 #if CC_LUA_ENGINE_ENABLED > 0
@@ -103,8 +103,8 @@ const string Crypto::MD5String(void* input, int inputLength)
     unsigned char buffer[MD5_BUFFER_LENGTH];
     MD5(static_cast<void*>(input), inputLength, buffer);
 
-    LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
-    stack->clean();
+    //LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
+    //stack->clean();
     
     char* hex = bin2hex(buffer, MD5_BUFFER_LENGTH);
     string ret(hex);

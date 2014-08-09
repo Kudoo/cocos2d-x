@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "platform/CCFileUtils.h"
 #include "base/ccUtils.h"
 
-#include "deprecated/CCString.h"
+
 
 
 #ifdef EMSCRIPTEN

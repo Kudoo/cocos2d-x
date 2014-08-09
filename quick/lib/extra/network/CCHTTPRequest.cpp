@@ -1,6 +1,7 @@
 #include "network/CCHTTPRequest.h"
 #include <stdio.h>
 #include <iostream>
+#include <thread>
 
 #if CC_LUA_ENGINE_ENABLED > 0
 extern "C" {
@@ -8,8 +9,8 @@ extern "C" {
 }
 #include "CCLuaEngine.h"
 #endif
+#include <sstream>
 
-using namespace cocos2d;
 
 NS_CC_EXTRA_BEGIN
 
@@ -191,16 +192,25 @@ bool HTTPRequest::start(void)
     curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
 
 #ifdef _WINDOWS_
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+	std::thread worker(requestCURL, this);
+	worker.detach();
+
+#else
     CreateThread(NULL,          // default security attributes
                  0,             // use default stack size
                  requestCURL,   // thread function name
                  this,          // argument to thread function
                  0,             // use default creation flags
                  NULL);
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_WP8
+
 #else
     pthread_create(&m_thread, NULL, requestCURL, this);
     pthread_detach(m_thread);
 #endif
+
     
     Director::getInstance()->getScheduler()->scheduleUpdateForTarget(this, 0, false);
     // CCLOG("HTTPRequest[0x%04x] - request start", s_id);

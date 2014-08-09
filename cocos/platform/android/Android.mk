@@ -27,7 +27,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/.. \
                     $(LOCAL_PATH)/../.. \
-                    $(LOCAL_PATH)/../../../quick/samples/anysdk/proj.android/protocols/android \
+                    $(QUICK_V3_LIB)/extra/anysdk/protocols/android \
                     $(QUICK_V3_LIB)
 
 LOCAL_LDLIBS := -lGLESv1_CM \

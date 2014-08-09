@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CCTMXXMLParser.h"
 #include "CCFastTMXLayer.h"
 #include "CCSprite.h"
-#include "deprecated/CCString.h"
+
 
 NS_CC_BEGIN
 namespace experimental {

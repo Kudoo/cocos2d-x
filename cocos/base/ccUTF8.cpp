@@ -172,6 +172,27 @@ long getCharacterCountInUTF8String(const std::string& utf8)
     return getUTF8StringLength((const UTF8*)utf8.c_str());
 }
 
+    std::string format(const char* format, ...)
+    {
+#define CC_MAX_STRING_LENGTH (1024*100)
+        
+        std::string ret;
+        
+        va_list ap;
+        va_start(ap, format);
+        
+        char* buf = (char*)malloc(CC_MAX_STRING_LENGTH);
+        if (buf != nullptr)
+        {
+            vsnprintf(buf, CC_MAX_STRING_LENGTH, format, ap);
+            ret = buf;
+            free(buf);
+        }
+        va_end(ap);
+        
+        return ret;
+    }
+
 } //namespace StringUtils {
 
 

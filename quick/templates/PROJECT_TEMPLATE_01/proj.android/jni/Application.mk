@@ -1,5 +1,5 @@
 APP_STL := gnustl_static
-APP_CPPFLAGS := -frtti -std=c++11 -Wno-literal-suffix -fsigned-char
+APP_CPPFLAGS := -frtti -std=c++11 -Wno-literal-suffix -fsigned-char -Os $(CPPFLAGS)
 
 APP_DEBUG := $(strip $(NDK_DEBUG))
 ifeq ($(APP_DEBUG),1)

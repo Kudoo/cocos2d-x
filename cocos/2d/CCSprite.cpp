@@ -50,7 +50,7 @@ THE SOFTWARE.
 #include "math/CCAffineTransform.h"
 #include "math/TransformUtils.h"
 
-#include "deprecated/CCString.h"
+
 
 
 NS_CC_BEGIN

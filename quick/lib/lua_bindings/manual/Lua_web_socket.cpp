@@ -32,6 +32,7 @@
 #include "CCLuaValue.h"
 #include "CCLuaEngine.h"
 #include "LuaScriptHandlerMgr.h"
+#include "LuaBasicConversions.h"
 
 using namespace cocos2d;
 
@@ -232,7 +233,7 @@ static int tolua_Cocos2d_WebSocket_createByProtocolArray00(lua_State* tolua_S)
     if (
         !tolua_isusertable(tolua_S,1,"cc.WebSocket",0,&tolua_err) ||
         !tolua_isstring(tolua_S,2,0,&tolua_err)  ||
-        !tolua_isusertable(tolua_S,3,"CCArray",0,&tolua_err)  ||
+        !tolua_istable(tolua_S,3,0,&tolua_err)  ||
         !tolua_isnoobj(tolua_S,4,&tolua_err)
         )
         goto tolua_lerror;
@@ -240,18 +241,8 @@ static int tolua_Cocos2d_WebSocket_createByProtocolArray00(lua_State* tolua_S)
 #endif
     {
         const char *urlName  = ((const char*)  tolua_tostring(tolua_S,2,0));
-        __Array*    protocolArray = ((__Array*)  tolua_tousertype(tolua_S,3,0));
         std::vector<std::string> protocols;
-        if (NULL != protocolArray) {
-            Ref* pObj = NULL;
-            CCARRAY_FOREACH(protocolArray, pObj)
-            {
-                __String* pStr = static_cast<__String*>(pObj);
-                if (NULL != pStr) {
-                    protocols.push_back(pStr->getCString());
-                }
-            }
-        }
+        luaval_to_std_vector_string(tolua_S, 3, &protocols);
         LuaWebSocket *wSocket = new LuaWebSocket();
         wSocket->init(*wSocket, urlName,&protocols);
         tolua_pushusertype(tolua_S,(void*)wSocket,"cc.WebSocket");

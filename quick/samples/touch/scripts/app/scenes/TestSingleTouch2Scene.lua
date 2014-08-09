@@ -11,7 +11,7 @@ function TestSingleTouch2Scene:ctor()
             image = "WhiteButton.png",
             size = cc.size(600, 500),
             label = "TOUCH ME !",
-            labelColor = cc.c3(255, 0, 0)})
+            labelColor = cc.c3b(255, 0, 0)})
         :pos(display.cx, display.cy)
         :addTo(self)
     self.parentButton.name = "parentButton"

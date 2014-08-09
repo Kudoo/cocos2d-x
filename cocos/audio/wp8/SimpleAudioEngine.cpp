@@ -20,6 +20,8 @@
 #include "Audio.h"
 
 #include <map>
+#include "CCFileUtilsWinRT.h"
+
 //#include "CCCommon.h"
 using namespace std;
 
@@ -81,7 +83,8 @@ void SimpleAudioEngine::playBackgroundMusic(const char* pszFilePath, bool bLoop)
         return;
     }
 
-    sharedAudioController()->PlayBackgroundMusic(pszFilePath, bLoop);
+	std::string fullpath = cocos2d::FileUtils::getInstance()->fullPathForFilename(pszFilePath);
+	sharedAudioController()->PlayBackgroundMusic(fullpath.c_str(), bLoop);
 }
 
 void SimpleAudioEngine::stopBackgroundMusic(bool bReleaseData)
@@ -121,7 +124,8 @@ bool SimpleAudioEngine::isBackgroundMusicPlaying()
 unsigned int SimpleAudioEngine::playEffect(const char* pszFilePath, bool bLoop,float pitch, float pan, float gain)
 {
     unsigned int sound;
-    sharedAudioController()->PlaySoundEffect(pszFilePath, bLoop, sound);
+	std::string fullPath = cocos2d::FileUtils::getInstance()->fullPathForFilename(pszFilePath);
+	sharedAudioController()->PlaySoundEffect(fullPath.c_str(), bLoop, sound);
     // TODO: need to support playEffect parameters
     return sound;
 }
@@ -133,7 +137,8 @@ void SimpleAudioEngine::stopEffect(unsigned int nSoundId)
 
 void SimpleAudioEngine::preloadEffect(const char* pszFilePath)
 {
-    sharedAudioController()->PreloadSoundEffect(pszFilePath);
+	std::string fullPath = cocos2d::FileUtils::getInstance()->fullPathForFilename(pszFilePath);
+	sharedAudioController()->PreloadSoundEffect(fullPath.c_str());
 }
 
 void SimpleAudioEngine::pauseEffect(unsigned int nSoundId)
@@ -168,7 +173,8 @@ void SimpleAudioEngine::preloadBackgroundMusic(const char* pszFilePath)
 
 void SimpleAudioEngine::unloadEffect(const char* pszFilePath)
 {
-    sharedAudioController()->UnloadSoundEffect(pszFilePath);
+	std::string fullpath = cocos2d::FileUtils::getInstance()->fullPathForFilename(pszFilePath);
+	sharedAudioController()->UnloadSoundEffect(fullpath.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////

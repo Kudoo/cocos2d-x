@@ -29,7 +29,7 @@ Store::~Store(void)
 #if CC_LUA_ENGINE_ENABLED > 0
     if (m_listener)
     {
-        ScriptEngineManager::sharedManager()->getScriptEngine()->removeScriptHandler(m_listener);
+        ScriptEngineManager::getInstance()->getScriptEngine()->removeScriptHandler(m_listener);
     }
 #endif
     for (StorePaymentTransactionsIterator it = m_transactions.begin(); it != m_transactions.end(); ++it)
@@ -64,7 +64,7 @@ void Store::postInitWithTransactionListenerLua(LUA_FUNCTION listener)
 {
     if (m_listener)
     {
-        ScriptEngineManager::sharedManager()->getScriptEngine()->removeScriptHandler(m_listener);
+        ScriptEngineManager::getInstance()->getScriptEngine()->removeScriptHandler(m_listener);
     }
     m_listener = listener;
     [[StoreIOS sharedStore] postInitWithTransactionObserver:this];
@@ -76,13 +76,13 @@ bool Store::canMakePurchases(void)
     return [[StoreIOS sharedStore] canMakePurchases];
 }
 
-void Store::loadProducts(__Array* productsId, StoreProductsRequestDelegate* delegate)
+void Store::loadProducts(Vector<std::string>& productsId, StoreProductsRequestDelegate* delegate)
 {
     NSMutableSet* set = [NSMutableSet set];
-    for (int i = 0; i < productsId->count(); ++i)
+    for (int i = 0; i < productsId.size(); ++i)
     {
-        __String* productId = static_cast<__String*>(productsId->objectAtIndex(i));
-        [set addObject:[NSString stringWithUTF8String: productId->_string.c_str()]];
+        std::string productId = productsId.at(i);
+        [set addObject:[NSString stringWithUTF8String: productId.c_str()]];
     }
     [[StoreIOS sharedStore] requestProductData:set andDelegate:delegate];
 }
@@ -258,16 +258,16 @@ void Store::transactionRestored(StorePaymentTransaction* transaction)
 }
 
 #if CC_LUA_ENGINE_ENABLED > 0
-void Store::requestProductsCompleted(__Array* products, __Array* invalidProductsId)
+void Store::requestProductsCompleted(Vector<StoreProduct*>& products, vector<std::string*>& invalidProductsId)
 {
     LuaStack* stack = LuaEngine::getInstance()->getLuaStack();
 
     LuaValueDict event;
     LuaValueArray products_;
 
-    for (int i = 0; i < products->count(); ++i)
+    for (int i = 0; i < products.size(); ++i)
     {
-        StoreProduct* product = static_cast<StoreProduct*>(products->objectAtIndex(i));
+        StoreProduct* product = static_cast<StoreProduct*>(products.at(i));
         LuaValueDict product_;
         product_["productIdentifier"]    = LuaValue::stringValue(product->getProductIdentifier());
         product_["localizedTitle"]       = LuaValue::stringValue(product->getLocalizedTitle());
@@ -278,13 +278,13 @@ void Store::requestProductsCompleted(__Array* products, __Array* invalidProducts
     }
     event["products"] = LuaValue::arrayValue(products_);
 
-    if (invalidProductsId)
+    if (invalidProductsId.size()>0)
     {
         LuaValueArray invalidProductsId_;
-        for (int i = 0; i < invalidProductsId->count(); ++i)
+        for (int i = 0; i < invalidProductsId.size(); ++i)
         {
-            __String* ccid = static_cast<__String*>(invalidProductsId->objectAtIndex(i));
-            invalidProductsId_.push_back(LuaValue::stringValue(ccid->getCString()));
+            std::string *ccid = invalidProductsId.at(i);
+            invalidProductsId_.push_back(LuaValue::stringValue(ccid->c_str()));
         }
         event["invalidProductsId"] = LuaValue::arrayValue(invalidProductsId_);
     }

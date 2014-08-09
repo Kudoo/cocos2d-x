@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "CCTMXXMLParser.h"
 #include "CCTMXLayer.h"
 #include "2d/CCSprite.h"
-#include "deprecated/CCString.h" // For StringUtils::format
 
 #include <algorithm>
 

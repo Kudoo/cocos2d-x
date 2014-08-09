@@ -16,31 +16,48 @@ UIListView.CLICKED_TAG				= "Clicked"
 UIListView.BG_ZORDER 				= -1
 UIListView.CONTENT_ZORDER			= 10
 
+UIListView.ALIGNMENT_LEFT			= 0
+UIListView.ALIGNMENT_RIGHT			= 1
+UIListView.ALIGNMENT_VCENTER		= 2
+UIListView.ALIGNMENT_TOP			= 3
+UIListView.ALIGNMENT_BOTTOM			= 4
+UIListView.ALIGNMENT_HCENTER		= 5
+
+
 function UIListView:ctor(params)
 	UIListView.super.ctor(self, params)
 
 	self.items_ = {}
 	self.direction = params.direction or UIScrollView.DIRECTION_VERTICAL
+	self.alignment = params.alignment or UIListView.ALIGNMENT_VCENTER
 	self.container = cc.Node:create()
 	-- self.padding_ = params.padding or {left = 0, right = 0, top = 0, bottom = 0}
+
+	-- self:addBgColorIf(params)
+	self:addBgIf(params)
+
+	-- params.viewRect.x = params.viewRect.x + self.padding_.left
+	-- params.viewRect.y = params.viewRect.y + self.padding_.bottom
+	-- params.viewRect.width = params.viewRect.width - self.padding_.left - self.padding_.right
+	-- params.viewRect.height = params.viewRect.height - self.padding_.bottom - self.padding_.top
 
 	self:setDirection(params.direction)
 	self:setViewRect(params.viewRect)
 	self:addScrollNode(self.container)
 	self:onScroll(handler(self, self.scrollListener))
 
-	self:addBgColorIf(params.bgColor)
-	self:addBgIf(params)
-
 	self.size = {}
 end
 
-function UIListView:addBgColorIf(bgColor)
-	if not bgColor then
+function UIListView:addBgColorIf(params)
+	if not params.bgColor then
 		return
 	end
 
-	display.newColorLayer(bgColor):addTo(self, UIListView.BG_ZORDER)
+	display.newColorLayer(params.bgColor)
+		:size(params.viewRect.width, params.viewRect.height)
+		:pos(params.viewRect.x, params.viewRect.y)
+		:addTo(self, UIListView.BG_ZORDER)
 		:setTouchEnabled(false)
 end
 
@@ -63,8 +80,13 @@ function UIListView:onTouch(listener)
 	return self
 end
 
+function UIListView:setAlignment(align)
+	self.alignment = align
+end
+
 function UIListView:newItem(item)
 	item = UIListViewItem.new(item)
+	item:setDirction(self.direction)
 	item:onSizeChange(handler(self, self.itemSizeChangeListener))
 
 	return item
@@ -99,46 +121,49 @@ function UIListView:itemSizeChangeListener(listItem, newSize, oldSize)
 end
 
 function UIListView:scrollListener(event)
-	if "clicked" ~= event.name then
-		return
-	end
+	if "clicked" == event.name then
+		local nodePoint = self.container:convertToNodeSpace(cc.p(event.x, event.y))
+		nodePoint.x = nodePoint.x - self.viewRect_.x
+		nodePoint.y = nodePoint.y - self.viewRect_.y
 
-	local nodePoint = self.container:convertToNodeSpace(cc.p(event.x, event.y))
-	nodePoint.x = nodePoint.x - self.viewRect_.x
-	nodePoint.y = nodePoint.y - self.viewRect_.y
+		local width, height = 0, self.size.height
+		local itemW, itemH = 0, 0
+		local pos
+		if UIScrollView.DIRECTION_VERTICAL == self.direction then
+			for i,v in ipairs(self.items_) do
+				_, itemH = v:getItemSize()
 
-	local width, height = 0, self.size.height
-	local itemW, itemH = 0, 0
-	local pos
-	if UIScrollView.DIRECTION_VERTICAL == self.direction then
-		for i,v in ipairs(self.items_) do
-			_, itemH = v:getItemSize()
-
-			if nodePoint.y < height and nodePoint.y > height - itemH then
-				pos = i
-				nodePoint.y = nodePoint.y - (height - itemH)
-				break
+				if nodePoint.y < height and nodePoint.y > height - itemH then
+					pos = i
+					nodePoint.y = nodePoint.y - (height - itemH)
+					break
+				end
+				height = height - itemH
 			end
-			height = height - itemH
+		else
+			for i,v in ipairs(self.items_) do
+				itemW, _ = v:getItemSize()
+
+				if nodePoint.x > width and nodePoint.x < width + itemW then
+					pos = i
+					break
+				end
+				width = width + itemW
+			end
 		end
+
+		self:notifyListener_{name = "clicked",
+			listView = self, itemPos = pos, item = self.items_[pos],
+			point = nodePoint}
+	elseif "moved" == event.name then
 	else
-		for i,v in ipairs(self.items_) do
-			itemW, _ = v:getItemSize()
-
-			if nodePoint.x > width and nodePoint.x < width + itemW then
-				pos = i
-				break
-			end
-			width = width + itemW
-		end
 	end
 
-	self:notifyListener_{name = "clicked",
-		listView = self, itemPos = pos, item = self.items_[pos],
-		point = nodePoint}
 end
 
 function UIListView:addItem(listItem, pos)
+	self:modifyItemSizeIf_(listItem)
+
 	if pos then
 		table.insert(self.items_, pos, listItem)
 	else
@@ -183,9 +208,31 @@ function UIListView:getItemPos(listItem)
 	end
 end
 
+function UIListView:isItemInViewRect(pos)
+	local item
+	if "number" == type(pos) then
+		item = self.items_[pos]
+	elseif "userdata" == type(pos) then
+		item = pos
+	end
+
+	if not item then
+		return
+	end
+	
+	local bound = item:getBoundingBox()
+	local nodePoint = self.container:convertToWorldSpace(
+		cc.p(bound.x, bound.y))
+	bound.x = nodePoint.x
+	bound.y = nodePoint.y
+
+	return cc.rectIntersectsRect(self.viewRect_, bound)
+end
+
 function UIListView:layout_()
 	local width, height = 0, 0
 	local itemW, itemH = 0, 0
+	local margin
 
 	-- calcate whole width height
 	if UIScrollView.DIRECTION_VERTICAL == self.direction then
@@ -216,6 +263,42 @@ function UIListView:layout_()
 	self.size.width = width
 	self.size.height = height
 
+	local setPositionByAlignment = function(content, w, h, margin)
+		local size = content:getContentSize()
+		if 0 == margin.left and 0 == margin.right and 0 == margin.top and 0 == margin.bottom then
+			if UIScrollView.DIRECTION_VERTICAL == self.direction then
+				if UIListView.ALIGNMENT_LEFT == self.alignment then
+					content:setPosition(size.width/2, h/2)
+				elseif UIListView.ALIGNMENT_RIGHT == self.alignment then
+					content:setPosition(w - size.width/2, h/2)
+				else
+					content:setPosition(w/2, h/2)
+				end
+			else
+				if UIListView.ALIGNMENT_TOP == self.alignment then
+					content:setPosition(w/2, h - size.height/2)
+				elseif UIListView.ALIGNMENT_RIGHT == self.alignment then
+					content:setPosition(w/2, size.height/2)
+				else
+					content:setPosition(w/2, h/2)
+				end
+			end
+		else
+			local posX, posY
+			if 0 ~= margin.right then
+				posX = w - margin.right - size.width/2
+			else
+				posX = size.width/2 + margin.left
+			end
+			if 0 ~= margin.top then
+				posY = h - margin.top - size.height/2
+			else
+				posY = size.height/2 + margin.bottom
+			end
+			content:setPosition(posX, posY)
+		end
+	end
+
 	local tempWidth, tempHeight = width, height
 	if UIScrollView.DIRECTION_VERTICAL == self.direction then
 		itemW, itemH = 0, 0
@@ -229,7 +312,8 @@ function UIListView:layout_()
 			tempHeight = tempHeight - itemH
 			content = v:getContent()
 			content:setAnchorPoint(0.5, 0.5)
-			content:setPosition(itemW/2, itemH/2)
+			-- content:setPosition(itemW/2, itemH/2)
+			setPositionByAlignment(content, itemW, itemH, v:getMargin())
 			v:setPosition(self.viewRect_.x,
 				self.viewRect_.y + tempHeight)
 		end
@@ -244,7 +328,8 @@ function UIListView:layout_()
 
 			content = v:getContent()
 			content:setAnchorPoint(0.5, 0.5)
-			content:setPosition(itemW/2, itemH/2)
+			-- content:setPosition(itemW/2, itemH/2)
+			setPositionByAlignment(content, itemW, itemH, v:getMargin())
 			v:setPosition(self.viewRect_.x + tempWidth, self.viewRect_.y)
 			tempWidth = tempWidth + itemW
 		end
@@ -327,6 +412,94 @@ function UIListView:notifyListener_(event)
 	end
 
 	self.touchListener_(event)
+end
+
+function UIListView:modifyItemSizeIf_(item)
+	local w, h = item:getItemSize()
+
+	if UIScrollView.DIRECTION_VERTICAL == self.direction then
+		if w ~= self.viewRect_.width then
+			item:setItemSize(self.viewRect_.width, h, true)
+		end
+	else
+		if h ~= self.viewRect_.height then
+			item:setItemSize(w, self.viewRect_.height, true)
+		end
+	end
+end
+
+function UIListView:update_(dt)
+	UIListView.super.update_(self, dt)
+
+	self:checkItemsInStatus_()
+end
+
+function UIListView:checkItemsInStatus_()
+	if not self.itemInStatus_ then
+		self.itemInStatus_ = {}
+	end
+
+	local rectIntersectsRect = function(rectParent, rect)
+		-- dump(rectParent, "parent:")
+		-- dump(rect, "rect:")
+
+		local nIntersects -- 0:no intersects,1:have intersects,2,have intersects and include totally
+		local bIn = rectParent.x <= rect.x and
+				rectParent.x + rectParent.width >= rect.x + rect.width and
+				rectParent.y <= rect.y and
+				rectParent.y + rectParent.height >= rect.y + rect.height
+		if bIn then
+			nIntersects = 2
+		else
+			local bNotIn = rectParent.x > rect.x + rect.width or
+				rectParent.x + rectParent.width < rect.x or
+				rectParent.y > rect.y + rect.height or
+				rectParent.y + rectParent.height < rect.y
+			if bNotIn then
+				nIntersects = 0
+			else
+				nIntersects = 1
+			end
+		end
+
+		return nIntersects
+	end
+
+	local newStatus = {}
+	local bound
+	local nodePoint
+	for i,v in ipairs(self.items_) do
+		bound = v:getBoundingBox()
+		nodePoint = self.container:convertToWorldSpace(cc.p(bound.x, bound.y))
+		bound.x = nodePoint.x
+		bound.y = nodePoint.y
+		newStatus[i] =
+			rectIntersectsRect(self.viewRect_, bound)
+	end
+
+	-- dump(self.itemInStatus_, "status:")
+	-- dump(newStatus, "newStatus:")
+	for i,v in ipairs(newStatus) do
+		if self.itemInStatus_[i] and self.itemInStatus_[i] ~= v then
+			-- print("statsus:" .. self.itemInStatus_[i] .. " v:" .. v)
+			local params = {listView = self,
+							itemPos = i,
+							item = self.items_[i]}
+			if 0 == v then
+				params.name = "itemDisappear"
+			elseif 1 == v then
+				params.name = "itemAppearChange"
+			elseif 2 == v then
+				params.name = "itemAppear"
+			end
+			self:notifyListener_(params)
+		else
+			-- print("status same:" .. self.itemInStatus_[i])
+		end
+	end
+	self.itemInStatus_ = newStatus
+	-- dump(self.itemInStatus_, "status:")
+	-- print("itemStaus:" .. #self.itemInStatus_)
 end
 
 return UIListView
